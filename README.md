@@ -1,2 +1,2 @@
-# rombooking-ntnu
-Kan det automatiseres?
+# 🚀 Rombooking NTNU 🚀
+Kan det automatiseres? 🔨
