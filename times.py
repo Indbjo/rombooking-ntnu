@@ -35,25 +35,25 @@ def determine_booking_weekday(df):
 def initialize_booking_dates(df):
     now = datetime.now()
     length = len(df)
-    next_booking_dates = []
+    next_booking_datetimes = []
     for i in range(length):
         weekday_index = (i - LIMIT) % length
         booking_weekday = df['weekday'][weekday_index]
         booking_time = (parse(df.loc[weekday_index, 'end_time']) + timedelta(minutes=1))
-        next_booking_date = now + timedelta(days=now.weekday() + 1 + int(booking_weekday))
+        next_booking_datetime = now + timedelta(days=now.weekday() + 1 + int(booking_weekday))
         next_booking_datetime = datetime(
-            year=next_booking_date.year,
-            month=next_booking_date.month,
-            day=next_booking_date.day,
+            year=next_booking_datetime.year,
+            month=next_booking_datetime.month,
+            day=next_booking_datetime.day,
             hour=booking_time.hour,
             minute=booking_time.minute
         )
-        next_booking_dates.append(next_booking_datetime.strftime("%Y-%m-%d %H:%M"))
-    return next_booking_dates
+        next_booking_datetimes.append(next_booking_datetime.strftime("%Y-%m-%d %H:%M"))
+    return next_booking_datetimes
 
 
 def book(df, index):
-    df.loc[index, 'next_booking_date'] = (parse(df.loc[index, 'next_booking_date']) + timedelta(days=7)).strftime('%Y-%m-%d %H:%M')
+    df.loc[index, 'next_booking_datetime'] = (parse(df.loc[index, 'next_booking_datetime']) + timedelta(days=7)).strftime('%Y-%m-%d %H:%M')
 
 
 
@@ -63,7 +63,7 @@ compute_end_and_booking_times(df)
 print(df)
 print(len(df))
 
-df['next_booking_date'] = initialize_booking_dates(df)
+df['next_booking_datetime'] = initialize_booking_dates(df)
 book(df, 0)
 print(df)
 

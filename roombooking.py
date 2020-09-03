@@ -15,28 +15,17 @@ def check_driver():
         raise TypeError(f"Driver is set to {DRIVER}. Must be set to a webdriver for the script to work.")
 
 
-def set_time_period_for_booking():
-
-
-
-    # TODO: Move to times.py
-    start = '08:15'
-    duration = '04:00'
-    selected_date = (date.today() + timedelta(days=3)).strftime("%d.%m.%Y")
-    return start, duration, selected_date
-
-
 def select_option(option_text, element):
     for option in element.find_elements_by_tag_name('option'):
-        if option.text == option_text:
+        if str(option.text).strip() == option_text:
             option.click()
             print(f"clicked option with text: {option.text}")
             return
 
 
-def select_option_by_id(option_id, element):
+def select_option_by_start_text(option_id, element):
     for option in element.find_elements_by_tag_name('option'):
-        if option.id == option_id:
+        if str(option.text).startswith(option_id):
             option.click()
             print(f"clicked option with ID: {option.id}")
             return
@@ -65,11 +54,8 @@ def select_room(priority_list_by_id):
     )
 
 
-def select_times():
+def select_times(start, end_time, selected_date, area, building, roomtype):
     check_driver()
-    area = 'Gløshaugen'
-    building = 'Realfagbygget'
-    roomtype = 'Lesesal'
     start_picker = DRIVER.find_element_by_id('start')
     duration_picker = DRIVER.find_element_by_id('duration')
     area_picker = DRIVER.find_element_by_id('area')
@@ -77,13 +63,13 @@ def select_times():
     roomtype_picker = DRIVER.find_element_by_id('roomtype')
     single_seat_picker = DRIVER.find_element_by_id('single_place')
 
-    start, duration, selected_date = set_time_period_for_booking()
-
     select_option(start, start_picker)
-    select_option_by_id(f'duration_{duration}', duration_picker)
+    select_option_by_start_text(f'{end_time}', duration_picker)
 
     date_picker = DRIVER.find_element_by_id('preset_date')
     date_picker.send_keys(selected_date)
+
+    time.sleep(10)
 
     select_option(area, area_picker)
     select_option(building, building_picker)
@@ -130,15 +116,19 @@ def login():
 def book_room(start_time, duration, date, area, building, roomtype, room, seat):
     global DRIVER
     DRIVER = webdriver.Safari()
+    success = False
     try:
         login()
-        select_times()
-        select_room(['360E3-107'])
-        select_seat([7])
+        select_times(start='08:15', end_time='12:15', selected_date='07.09.2020', area='Gløshaugen', building='Realfagbygget', roomtype='Lesesal')
+        select_room(room)
+        select_seat(seat)
+        success = True
     except Exception as e:
         print(f"Something went wrong: {e}")
     finally:
         DRIVER.close()
+        return success
 
 
-book_room()
+print(book_room(0, 0, 0, 0, 0, 0, ['360E3-107'], [7]))
+
