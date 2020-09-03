@@ -1,6 +1,7 @@
 from selenium import webdriver
 import time
 import config
+import times
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -9,7 +10,16 @@ from datetime import date, timedelta
 DRIVER = None
 
 
+def check_driver():
+    if DRIVER is None:
+        raise TypeError(f"Driver is set to {DRIVER}. Must be set to a webdriver for the script to work.")
+
+
 def set_time_period_for_booking():
+
+
+
+    # TODO: Move to times.py
     start = '08:15'
     duration = '04:00'
     selected_date = (date.today() + timedelta(days=3)).strftime("%d.%m.%Y")
@@ -33,6 +43,7 @@ def select_option_by_id(option_id, element):
 
 
 def select_seat(seat_priority_list_by_number):
+    check_driver()
     radio_picker = DRIVER.find_element_by_xpath(f'//div[@id="place-{seat_priority_list_by_number[0]}-overlay"]/input[1]')
     DRIVER.execute_script("arguments[0].click()", radio_picker)
 
@@ -40,12 +51,11 @@ def select_seat(seat_priority_list_by_number):
     description_input.send_keys('Lesing')
 
     confirm_button = DRIVER.find_element_by_name('confirm')
-    #driver.execute_script("arguments[0].click()", confirm_button)
-
-    time.sleep(10)
+    DRIVER.execute_script("arguments[0].click()", confirm_button)
 
 
 def select_room(priority_list_by_id):
+    check_driver()
     radio_picker = DRIVER.find_element_by_xpath(f'//tr[@id="{priority_list_by_id[0]}"]/td[@title="Velg"]/input[1]')
     DRIVER.execute_script("arguments[0].click()", radio_picker)
     order_button = DRIVER.find_element_by_id('rb-bestill')
@@ -56,6 +66,7 @@ def select_room(priority_list_by_id):
 
 
 def select_times():
+    check_driver()
     area = 'Gløshaugen'
     building = 'Realfagbygget'
     roomtype = 'Lesesal'
@@ -92,6 +103,7 @@ def select_times():
 
 
 def login():
+    check_driver()
     DRIVER.get('https://tp.uio.no/ntnu/rombestilling/')
     url = DRIVER.current_url
     url = url.replace("selectorg", "login")
@@ -115,31 +127,7 @@ def login():
     )
 
 
-@DeprecationWarning
-def select_org():
-        DRIVER.get('https://tp.uio.no/ntnu/rombestilling/')
-        form = DRIVER.find_elements_by_name('f')[0]
-        label = DRIVER.find_element_by_xpath("//form[@name='f']/label[1]")
-        with open('html.html', 'r') as file:
-            print("reading html")
-            html_string = file.read()
-            print("html read")
-        print("removing label")
-        DRIVER.execute_script("arguments[0].parentNode.removeChild(arguments[0])", label)
-        print("label removed")
-        print("adding new child")
-        DRIVER.execute_script(f"form = arguments[0]; temp = document.createElement('template'); temp.innerHTML = `{html_string}`; form.appendChild(temp.content.firstChild);", form)
-        print("child added")
-        print("clicking button")
-        submit = DRIVER.find_element_by_id('selectorg_button')
-        submit.click()
-        print("button clicked")
-
-        print("logging in")
-        login()
-
-
-def book_room():
+def book_room(start_time, duration, date, area, building, roomtype, room, seat):
     global DRIVER
     DRIVER = webdriver.Safari()
     try:
