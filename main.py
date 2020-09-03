@@ -3,6 +3,7 @@ import times
 from datetime import datetime
 from dateutil.parser import parse
 from datetime import timedelta
+import time
 
 
 SCHEDULE = times.df
@@ -19,12 +20,11 @@ def time_to_book(schedule):
     return False, -1
 
 
-SCHEDULE.loc[0, 'next_booking_datetime'] = datetime.now().strftime("%Y-%m-%d %H:%M")
-
 print(SCHEDULE)
-
-while True:
+count = 0
+while count < 0:
     book, index = time_to_book(SCHEDULE)
+    count += 1
     if book:
         row = SCHEDULE.iloc[index]
         start_time = row['start_time']
@@ -36,10 +36,10 @@ while True:
         last_booked_datetime = datetime(year=booking_day.year, month=booking_day.month, day=booking_day.day, hour=parse(start_time).hour, minute=parse(start_time).minute)
         date = last_booked_datetime.strftime("%d.%m.%Y")
         SCHEDULE.loc[index, 'last_booked_datetime'] = last_booked_datetime
-
         success = roombooking.book_room(start_time=start_time, duration=duration, date=date, area='Gløshaugen', building='Realfagbygget', roomtype='Lesesal', room=['360E3-107'], seat=[7])
         times.book(SCHEDULE, index) if success else None
         print(f"Booked room for {last_booked_datetime}") if success else print('something went wrong.')
-        break
+        time.sleep(5)
 
+SCHEDULE.to_csv('schedule')
 print(SCHEDULE)

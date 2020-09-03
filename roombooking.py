@@ -1,11 +1,11 @@
 from selenium import webdriver
 import time
 import config
-import times
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from datetime import date, timedelta
+from selenium.webdriver.support.ui import Select
+
 
 DRIVER = None
 
@@ -13,22 +13,6 @@ DRIVER = None
 def check_driver():
     if DRIVER is None:
         raise TypeError(f"Driver is set to {DRIVER}. Must be set to a webdriver for the script to work.")
-
-
-def select_option(option_text, element):
-    for option in element.find_elements_by_tag_name('option'):
-        if str(option.text).strip() == option_text:
-            option.click()
-            print(f"clicked option with text: {option.text}")
-            return
-
-
-def select_option_by_start_text(option_id, element):
-    for option in element.find_elements_by_tag_name('option'):
-        if str(option.text).startswith(option_id):
-            option.click()
-            print(f"clicked option with ID: {option.id}")
-            return
 
 
 def select_seat(seat_priority_list_by_number):
@@ -54,7 +38,7 @@ def select_room(priority_list_by_id):
     )
 
 
-def select_times(start, end_time, selected_date, area, building, roomtype):
+def select_times(start, duration, selected_date, area, building, roomtype):
     check_driver()
     start_picker = DRIVER.find_element_by_id('start')
     duration_picker = DRIVER.find_element_by_id('duration')
@@ -63,26 +47,30 @@ def select_times(start, end_time, selected_date, area, building, roomtype):
     roomtype_picker = DRIVER.find_element_by_id('roomtype')
     single_seat_picker = DRIVER.find_element_by_id('single_place')
 
-    select_option(start, start_picker)
-    select_option_by_start_text(f'{end_time}', duration_picker)
+    start_select = Select(start_picker)
+    start_select.select_by_value(start)
+
+    duration_select = Select(duration_picker)
+    duration_select.select_by_value(duration)
 
     date_picker = DRIVER.find_element_by_id('preset_date')
+    date_picker.clear()
     date_picker.send_keys(selected_date)
 
-    time.sleep(10)
+    area_select = Select(area_picker)
+    area_select.select_by_visible_text(area)
 
-    select_option(area, area_picker)
-    select_option(building, building_picker)
-    select_option(roomtype, roomtype_picker)
+    building_select = Select(building_picker)
+    building_select.select_by_visible_text(building)
+
+    roomtype_select = Select(roomtype_picker)
+    roomtype_select.select_by_visible_text(roomtype)
 
     DRIVER.execute_script("arguments[0].setAttribute('checked', 'checked')", single_seat_picker)
-
-    print("options set")
 
     submit_button = DRIVER.find_element_by_id('preformsubmit')
     DRIVER.execute_script('arguments[0].click()', submit_button)
 
-    print("submitted")
     WebDriverWait(DRIVER, 3).until(
         EC.presence_of_element_located((By.ID, '360E3-107'))
     )
@@ -115,11 +103,11 @@ def login():
 
 def book_room(start_time, duration, date, area, building, roomtype, room, seat):
     global DRIVER
-    DRIVER = webdriver.Safari()
+    DRIVER = webdriver.Chrome()
     success = False
     try:
         login()
-        select_times(start='08:15', end_time='12:15', selected_date='07.09.2020', area='Gløshaugen', building='Realfagbygget', roomtype='Lesesal')
+        select_times(start=start_time, duration=duration, selected_date=date, area=area, building=building, roomtype=roomtype)
         select_room(room)
         select_seat(seat)
         success = True
@@ -128,7 +116,4 @@ def book_room(start_time, duration, date, area, building, roomtype, room, seat):
     finally:
         DRIVER.close()
         return success
-
-
-print(book_room(0, 0, 0, 0, 0, 0, ['360E3-107'], [7]))
 
