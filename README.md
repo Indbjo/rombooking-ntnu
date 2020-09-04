@@ -4,7 +4,7 @@
 ## How-to ##
 Velg webdriver i `roombooking.py`  
 Lag `config.py` med to felter: `ntnu_username` og `ntnu_password`.  
-Kjør scriptet i `main.py
+Kjør scriptet i `main.py`
 
 ## TODO ##
 - [ ] Feilhåndtering 🚨
