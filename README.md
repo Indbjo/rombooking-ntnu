@@ -6,12 +6,5 @@ Velg webdriver i `roombooking.py`
 Lag `config.py` med to felter: `ntnu_username` og `ntnu_password`.  
 Kjør scriptet i `main.py`
 
-## TODO ##
-- [ ] Feilhåndtering 🚨
-- [ ] Refactoring ♻️
-- [ ] Feedback til brukeren 📣
-- [ ] Booke med utgangspunkt i en romprioritet 🥇
-- [ ] Booke med utgangspunkt i seteprioritet for et gitt rom 🥈
-- [ ] Booke andre typer rom 🏚
-- [ ] Kjøre på en Raspberry-Pi 💻
-- [ ] Fikse bugs 🐛
+## How to contribute? ##
+Pick an issue from the list of issues, preferably one from an ongoing project. Complete the issue, and create a pull request.
