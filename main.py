@@ -20,26 +20,30 @@ def time_to_book(schedule):
     return False, -1
 
 
-print(SCHEDULE)
-count = 0
-while count < 0:
-    book, index = time_to_book(SCHEDULE)
-    count += 1
-    if book:
-        row = SCHEDULE.iloc[index]
-        start_time = row['start_time']
-        duration = row['duration']
-        weekday = row['weekday']
-        current_datetime = parse(SCHEDULE.loc[index, 'next_booking_datetime'])
-        booking_weekday = current_datetime.weekday()
-        booking_day = current_datetime + timedelta(days=7 - int(abs(weekday - booking_weekday)), minutes=-1)
-        last_booked_datetime = datetime(year=booking_day.year, month=booking_day.month, day=booking_day.day, hour=parse(start_time).hour, minute=parse(start_time).minute)
-        date = last_booked_datetime.strftime("%d.%m.%Y")
-        SCHEDULE.loc[index, 'last_booked_datetime'] = last_booked_datetime
-        success = roombooking.book_room(start_time=start_time, duration=duration, date=date, area='Gløshaugen', building='Realfagbygget', roomtype='Lesesal', room=['360E3-107'], seat=[7])
-        times.book(SCHEDULE, index) if success else None
-        print(f"Booked room for {last_booked_datetime}") if success else print('something went wrong.')
-        time.sleep(5)
+def main():
+    print(SCHEDULE)
+    count = 0
+    while count < 0:
+        book, index = time_to_book(SCHEDULE)
+        count += 1
+        if book:
+            row = SCHEDULE.iloc[index]
+            start_time = row['start_time']
+            duration = row['duration']
+            weekday = row['weekday']
+            current_datetime = parse(SCHEDULE.loc[index, 'next_booking_datetime'])
+            booking_weekday = current_datetime.weekday()
+            booking_day = current_datetime + timedelta(days=7 - int(abs(weekday - booking_weekday)), minutes=-1)
+            last_booked_datetime = datetime(year=booking_day.year, month=booking_day.month, day=booking_day.day, hour=parse(start_time).hour, minute=parse(start_time).minute)
+            date = last_booked_datetime.strftime("%d.%m.%Y")
+            SCHEDULE.loc[index, 'last_booked_datetime'] = last_booked_datetime
+            success = roombooking.book_room(start_time=start_time, duration=duration, date=date, area='Gløshaugen', building='Realfagbygget', roomtype='Lesesal', room=['360E3-107'], seat=[7])
+            times.book(SCHEDULE, index) if success else None
+            print(f"Booked room for {last_booked_datetime}") if success else print('something went wrong.')
+            time.sleep(5)
 
-SCHEDULE.to_csv('schedule')
-print(SCHEDULE)
+    SCHEDULE.to_csv('schedule')
+    print(SCHEDULE)
+
+
+main()
