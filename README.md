@@ -1,5 +1,5 @@
 # 🚀 Rombooking NTNU 🚀
-Å booke lesesalplass hver dag er en kjedelig og tar tid. Derfor har jeg brukt mer tid enn det jeg ville brukt på å booke lesesalplasser manuelt, for å lage en måte å automatisere rombookingen. Kortversjonen er at det bygger på Selenium, og automatiserer interaksjonen med nettleseren. Lover at brukernavn og passord ikke blir sendt til meg. Jada. 100%. Ingen tvil. 👮‍♂️
+Å booke lesesalplass hver dag er en kjedelig og tar tid. Derfor har jeg brukt mer tid enn det jeg ville brukt på å booke lesesalplasser manuelt, for å lage en måte å automatisere rombookingen. Kortversjonen er at det bygger på Selenium, og automatiserer interaksjonen med nettleseren.
 
 ## How-to ##
 Velg webdriver i `roombooking.py`  
